@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
+import 'package:web_socket_channel/web_socket_channel.dart';
 
 void main() {
   runApp(const MyApp());
@@ -24,36 +24,51 @@ class StatsScreen extends StatefulWidget {
 
 class _StatsScreenState extends State<StatsScreen> {
   static const String serverIp = '192.168.1.103';
+  late final WebSocketChannel channel;
 
   double? cpuUsage;
   int? ramUsageMb;
   int? ramTotalMb;
   String? errorMessage;
 
-  Future<void> fetchStats() async {
-    try {
-      final response = await http.get(
-        Uri.parse('http://$serverIp:3000/api/stats'),
-      );
+  void connect() {
+    channel = WebSocketChannel.connect(
+      Uri.parse('ws://$serverIp:3000/ws/stats'),
+    );
 
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
+    channel.stream.listen(
+      (message) {
+        final data = jsonDecode(message);
         setState(() {
           cpuUsage = data['cpu_usage'];
           ramUsageMb = data['ram_usage_mb'];
           ramTotalMb = data['total_ram_mb'];
           errorMessage = null;
         });
-      } else {
+      },
+      onError: (error) {
         setState(() {
-          errorMessage = 'Server error: ${response.statusCode}';
+          errorMessage = 'WebSocket error: $error';
         });
-      }
-    } catch (e) {
-      setState(() {
-        errorMessage = 'Could not connect: $e';
-      });
-    }
+      },
+      onDone: () {
+        setState(() {
+          errorMessage = 'Disconnected from server';
+        });
+      },
+    );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    connect();
+  }
+
+  @override
+  void dispose() {
+    channel.sink.close();
+    super.dispose();
   }
 
   @override
@@ -76,8 +91,6 @@ class _StatsScreenState extends State<StatsScreen> {
                 style: const TextStyle(fontSize: 24),
               ),
             ],
-            const SizedBox(height: 20),
-            ElevatedButton(onPressed: fetchStats, child: const Text('Refresh')),
           ],
         ),
       ),
