@@ -27,7 +27,6 @@ async fn snapshot(sys: &SharedSystem) -> SystemInfo {
     sys.refresh_cpu_usage();
     tokio::time::sleep(Duration::from_millis(200)).await;
     sys.refresh_cpu_usage();
-
     sys.refresh_memory();
 
     SystemInfo {
@@ -49,9 +48,8 @@ async fn handle_socket(mut socket: WebSocket, sys: SharedSystem) {
     loop {
         let stats = snapshot(&sys).await;
 
-        let json = match serde_json::to_string(&stats) {
-            Ok(j) => j,
-            Err(_) => break,
+        let Ok(json) = serde_json::to_string(&stats) else {
+            break;
         };
 
         if socket.send(Message::Text(json.into())).await.is_err() {
@@ -72,7 +70,6 @@ async fn main() {
         .with_state(system);
 
     let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();
-
     println!("Server running on http://0.0.0.0:3000");
 
     axum::serve(listener, app).await.unwrap();
