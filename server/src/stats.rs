@@ -8,7 +8,7 @@ use axum::{
 use serde::Serialize;
 use std::time::Duration;
 
-use crate::state::SharedSystem;
+use crate::state::AppState;
 
 #[derive(Serialize)]
 pub struct SystemInfo {
@@ -20,8 +20,8 @@ pub struct SystemInfo {
 const BYTES_PER_MB: u64 = 1024 * 1024;
 const REFRESH_INTERVAL: Duration = Duration::from_secs(1);
 
-async fn get_stats(sys: &SharedSystem) -> SystemInfo {
-    let mut sys = sys.lock().await;
+async fn get_stats(state: &AppState) -> SystemInfo {
+    let mut sys = state.system.lock().await;
 
     sys.refresh_cpu_usage();
     tokio::time::sleep(Duration::from_millis(200)).await;
@@ -39,9 +39,9 @@ pub async fn health() -> &'static str {
     "ok"
 }
 
-async fn handle_socket(mut socket: WebSocket, sys: SharedSystem) {
+async fn handle_socket(mut socket: WebSocket, state: AppState) {
     loop {
-        let stats = get_stats(&sys).await;
+        let stats = get_stats(&state).await;
 
         let Ok(json) = serde_json::to_string(&stats) else {
             break;
@@ -57,7 +57,7 @@ async fn handle_socket(mut socket: WebSocket, sys: SharedSystem) {
 
 pub async fn ws_handler(
     ws: WebSocketUpgrade,
-    State(sys): State<SharedSystem>,
+    State(sys): State<AppState>,
 ) -> impl IntoResponse {
     ws.on_upgrade(move |socket| handle_socket(socket, sys))
 }

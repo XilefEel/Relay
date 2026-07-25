@@ -1,4 +1,5 @@
 server/target/
+server/actions.json
 
 app/build/
 app/.dart_tool/
