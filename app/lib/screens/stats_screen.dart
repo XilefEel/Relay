@@ -3,7 +3,9 @@ import 'package:app/widgets/error_view.dart';
 import 'package:app/widgets/loading_view.dart';
 import 'package:app/widgets/stat_card.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:web_socket_channel/web_socket_channel.dart';
+import '../widgets/action_button.dart';
 import '../widgets/history_chart.dart';
 
 enum ConnState { connecting, connected, error }
@@ -21,6 +23,9 @@ class _StatsScreenState extends State<StatsScreen> {
 
   late final WebSocketChannel channel;
 
+  List<ActionButtonData> actions = [];
+  String? runningActionId;
+
   ConnState state = ConnState.connecting;
   String? errorMessage;
 
@@ -31,10 +36,38 @@ class _StatsScreenState extends State<StatsScreen> {
   final List<double> cpuHistory = [];
   final List<double> ramHistory = [];
 
+  Future<void> fetchActions() async {
+    try {
+      final response = await http.get(
+        Uri.parse('http://$serverIp:3000/api/actions'),
+      );
+      if (response.statusCode == 200) {
+        final List<dynamic> data = jsonDecode(response.body);
+        setState(() {
+          actions = data.map((e) => ActionButtonData.fromJson(e)).toList();
+        });
+      }
+    } catch (e) {
+      // ignore errors
+    }
+  }
+
+  Future<void> runAction(String id) async {
+    setState(() => runningActionId = id);
+    try {
+      await http.post(Uri.parse('http://$serverIp:3000/api/actions/$id'));
+    } catch (e) {
+      // ignore errors
+    } finally {
+      setState(() => runningActionId = null);
+    }
+  }
+
   @override
   void initState() {
     super.initState();
     connect();
+    fetchActions();
   }
 
   void connect() {
@@ -142,6 +175,31 @@ class _StatsScreenState extends State<StatsScreen> {
                     : (ramUsageMb / ramTotalMb) * 100,
                 color: Colors.tealAccent,
               ),
+              if (actions.isNotEmpty) ...[
+                const SizedBox(height: 20),
+                Text(
+                  'Quick Actions',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                GridView.count(
+                  crossAxisCount: 3,
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  crossAxisSpacing: 12,
+                  mainAxisSpacing: 12,
+                  children: actions.map((action) {
+                    return ActionButton(
+                      action: action,
+                      isLoading: runningActionId == action.id,
+                      onTap: () => runAction(action.id),
+                    );
+                  }).toList(),
+                ),
+              ],
             ],
           ),
         },
