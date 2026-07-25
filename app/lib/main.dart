@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'screens/stats_screen.dart';
+import 'screens/dashboard_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -18,7 +18,7 @@ class MyApp extends StatelessWidget {
         colorSchemeSeed: Colors.deepPurple,
         fontFamily: 'GeistMono',
       ),
-      home: const StatsScreen(),
+      home: const DashboardScreen(),
     );
   }
 }
