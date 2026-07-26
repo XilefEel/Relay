@@ -24,7 +24,7 @@ class ActionsController extends ChangeNotifier {
         notifyListeners();
       }
     } catch (e) {
-      // actions are non-critical; fail silently for now
+      // no error handling for now
     }
   }
 
@@ -34,7 +34,7 @@ class ActionsController extends ChangeNotifier {
     try {
       await http.post(Uri.parse('http://$serverIp:3000/api/actions/$id'));
     } catch (e) {
-      // could surface an error later
+      // no error handling for now
     } finally {
       runningActionId = null;
       notifyListeners();
