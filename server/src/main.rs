@@ -21,6 +21,10 @@ async fn main() {
     let state = AppState {
         system: Arc::new(Mutex::new(System::new_all())),
         actions: load_actions(),
+        network_history: Arc::new(Mutex::new(state::NetworkHistory {
+            last_received: 0,
+            last_transmitted: 0,
+        })),
     };
 
     let app = Router::new()
