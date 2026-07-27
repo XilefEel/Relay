@@ -21,18 +21,21 @@ class ThemeToggle extends StatelessWidget {
       onSelected: themeController.setMode,
       itemBuilder: (context) => [
         _themeMenuItem(
+          context,
           ThemeMode.light,
           'Light',
           Icons.light_mode,
           themeController.mode == ThemeMode.light,
         ),
         _themeMenuItem(
+          context,
           ThemeMode.dark,
           'Dark',
           Icons.dark_mode,
           themeController.mode == ThemeMode.dark,
         ),
         _themeMenuItem(
+          context,
           ThemeMode.system,
           'System',
           Icons.brightness_auto,
@@ -44,6 +47,7 @@ class ThemeToggle extends StatelessWidget {
 }
 
 PopupMenuItem<ThemeMode> _themeMenuItem(
+  BuildContext context,
   ThemeMode mode,
   String label,
   IconData icon,
@@ -58,8 +62,12 @@ PopupMenuItem<ThemeMode> _themeMenuItem(
         Text(label),
         const Spacer(),
         isSelected
-            ? const Icon(Icons.check, size: 16, color: Colors.deepPurpleAccent)
-            : SizedBox(width: 16),
+            ? Icon(
+                Icons.check,
+                size: 16,
+                color: Theme.of(context).colorScheme.primary,
+              )
+            : const SizedBox(width: 16),
       ],
     ),
   );

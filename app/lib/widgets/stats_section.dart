@@ -12,6 +12,8 @@ class StatsSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final statColors = StatColors.of(context); // add this line
+
     final ramPercent = controller.ramTotalMb == 0
         ? 0.0
         : (controller.ramUsageMb / controller.ramTotalMb) * 100;
@@ -24,8 +26,8 @@ class StatsSection extends StatelessWidget {
               child: StatCard(
                 label: 'CPU',
                 value: controller.cpuUsage,
-                color: StatColors.cpu,
-                onColor: StatColors.cpuOn,
+                color: statColors.cpu,
+                onColor: statColors.cpuOn,
                 radius: BlobRadius.topLeft,
                 icon: Icons.memory,
               ),
@@ -35,8 +37,8 @@ class StatsSection extends StatelessWidget {
               child: StatCard(
                 label: 'RAM',
                 value: ramPercent,
-                color: StatColors.ram,
-                onColor: StatColors.ramOn,
+                color: statColors.ram,
+                onColor: statColors.ramOn,
                 radius: BlobRadius.topRight,
                 icon: Icons.sd_storage,
               ),
@@ -48,8 +50,8 @@ class StatsSection extends StatelessWidget {
           label: 'CPU history',
           values: controller.cpuHistory,
           currentValue: controller.cpuUsage,
-          color: StatColors.cpu,
-          onColor: StatColors.cpuOn,
+          color: statColors.cpu,
+          onColor: statColors.cpuOn,
           radius: BlobRadius.bottomLeft,
         ),
         const SizedBox(height: 12),
@@ -57,8 +59,8 @@ class StatsSection extends StatelessWidget {
           label: 'RAM history',
           values: controller.ramHistory,
           currentValue: ramPercent,
-          color: StatColors.ram,
-          onColor: StatColors.ramOn,
+          color: statColors.ram,
+          onColor: statColors.ramOn,
           radius: BlobRadius.bottomRight,
         ),
       ],

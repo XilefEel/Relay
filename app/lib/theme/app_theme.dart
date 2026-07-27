@@ -34,7 +34,36 @@ class AppTheme {
   }
 }
 
-class StatColors {
+class StatColorsLight {
+  static const cpu = Color(0xFFCECBF6);
+  static const cpuOn = Color(0xFF3C3489);
+
+  static const ram = Color(0xFF9FE1CB);
+  static const ramOn = Color(0xFF085041);
+
+  static const gpu = Color(0xFFF5C4B3);
+  static const gpuOn = Color(0xFF712B13);
+
+  static const actionFills = [
+    Color(0xFFCECBF6),
+    Color(0xFF9FE1CB),
+    Color(0xFFF5C4B3),
+    Color(0xFFF4C0D1),
+    Color(0xFFB5D4F4),
+    Color(0xFFFAC775),
+  ];
+
+  static const actionOnFills = [
+    Color(0xFF3C3489),
+    Color(0xFF085041),
+    Color(0xFF712B13),
+    Color(0xFF72243E),
+    Color(0xFF0C447C),
+    Color(0xFF854F0B),
+  ];
+}
+
+class StatColorsDark {
   static const cpu = Color(0xFF7F77DD);
   static const cpuOn = Color(0xFF26215C);
 
@@ -61,6 +90,48 @@ class StatColors {
     Color(0xFF042C53),
     Color(0xFF412402),
   ];
+}
+
+class StatColors {
+  final Color cpu, cpuOn, ram, ramOn, gpu, gpuOn;
+  final List<Color> actionFills, actionOnFills;
+
+  const StatColors._({
+    required this.cpu,
+    required this.cpuOn,
+    required this.ram,
+    required this.ramOn,
+    required this.gpu,
+    required this.gpuOn,
+    required this.actionFills,
+    required this.actionOnFills,
+  });
+
+  static const _light = StatColors._(
+    cpu: StatColorsLight.cpu,
+    cpuOn: StatColorsLight.cpuOn,
+    ram: StatColorsLight.ram,
+    ramOn: StatColorsLight.ramOn,
+    gpu: StatColorsLight.gpu,
+    gpuOn: StatColorsLight.gpuOn,
+    actionFills: StatColorsLight.actionFills,
+    actionOnFills: StatColorsLight.actionOnFills,
+  );
+
+  static const _dark = StatColors._(
+    cpu: StatColorsDark.cpu,
+    cpuOn: StatColorsDark.cpuOn,
+    ram: StatColorsDark.ram,
+    ramOn: StatColorsDark.ramOn,
+    gpu: StatColorsDark.gpu,
+    gpuOn: StatColorsDark.gpuOn,
+    actionFills: StatColorsDark.actionFills,
+    actionOnFills: StatColorsDark.actionOnFills,
+  );
+
+  static StatColors of(BuildContext context) {
+    return Theme.of(context).brightness == Brightness.dark ? _dark : _light;
+  }
 }
 
 class BlobRadius {

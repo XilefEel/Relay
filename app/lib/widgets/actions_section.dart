@@ -10,6 +10,8 @@ class ActionsSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final statColors = StatColors.of(context);
+
     if (controller.actions.isEmpty) return const SizedBox();
 
     return Column(
@@ -30,15 +32,15 @@ class ActionsSection extends StatelessWidget {
           mainAxisSpacing: 12,
           children: List.generate(controller.actions.length, (i) {
             final action = controller.actions[i];
-            final fillIdx = i % StatColors.actionFills.length;
+            final fillIdx = i % statColors.actionFills.length;
             final shapeIdx = i % BlobRadius.cycle.length;
 
             return ActionButton(
               action: action,
               isLoading: controller.runningActionId == action.id,
               onTap: () => controller.runAction(action.id),
-              color: StatColors.actionFills[fillIdx],
-              onColor: StatColors.actionOnFills[fillIdx],
+              color: statColors.actionFills[fillIdx],
+              onColor: statColors.actionOnFills[fillIdx],
               radius: BlobRadius.cycle[shapeIdx],
             );
           }),
