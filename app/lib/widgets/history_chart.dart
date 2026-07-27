@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
+import '../theme/app_theme.dart';
 
 class HistoryChart extends StatelessWidget {
   final String label;
   final List<double> values;
   final double currentValue;
   final Color color;
+  final Color onColor;
+  final BorderRadius radius;
 
   const HistoryChart({
     super.key,
@@ -13,41 +16,40 @@ class HistoryChart extends StatelessWidget {
     required this.values,
     required this.currentValue,
     required this.color,
+    required this.onColor,
+    this.radius = BlobRadius.bottomRight,
   });
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surfaceContainerHighest,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(color: color, borderRadius: radius),
+      padding: const EdgeInsets.all(18),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Icon(Icons.memory, color: color),
-              const SizedBox(width: 8),
               Text(
                 label,
                 style: TextStyle(
-                  fontSize: 14,
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                  color: onColor,
                 ),
               ),
               const Spacer(),
               Text(
-                '${currentValue.toStringAsFixed(1)}%',
-                style: const TextStyle(
-                  fontSize: 14,
+                '${currentValue.toStringAsFixed(0)}%',
+                style: TextStyle(
+                  fontSize: 18,
                   fontWeight: FontWeight.w700,
+                  color: onColor,
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 10),
           SizedBox(
             height: 64,
             child: values.length < 2
@@ -67,12 +69,12 @@ class HistoryChart extends StatelessWidget {
                               FlSpot(i.toDouble(), values[i]),
                           ],
                           isCurved: true,
-                          color: color,
+                          color: onColor,
                           barWidth: 3,
                           dotData: FlDotData(show: false),
                           belowBarData: BarAreaData(
                             show: true,
-                            color: color.withValues(alpha: 0.15),
+                            color: onColor.withValues(alpha: 0.2),
                           ),
                         ),
                       ],

@@ -1,4 +1,5 @@
 import 'package:app/controllers/stats_controller.dart';
+import 'package:app/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 
 import 'history_chart.dart';
@@ -23,7 +24,10 @@ class StatsSection extends StatelessWidget {
               child: StatCard(
                 label: 'CPU',
                 value: controller.cpuUsage,
-                color: Colors.deepPurpleAccent,
+                color: StatColors.cpu,
+                onColor: StatColors.cpuOn,
+                radius: BlobRadius.topLeft,
+                icon: Icons.memory,
               ),
             ),
             const SizedBox(width: 12),
@@ -31,7 +35,10 @@ class StatsSection extends StatelessWidget {
               child: StatCard(
                 label: 'RAM',
                 value: ramPercent,
-                color: Colors.tealAccent,
+                color: StatColors.ram,
+                onColor: StatColors.ramOn,
+                radius: BlobRadius.topRight,
+                icon: Icons.sd_storage,
               ),
             ),
           ],
@@ -41,14 +48,18 @@ class StatsSection extends StatelessWidget {
           label: 'CPU history',
           values: controller.cpuHistory,
           currentValue: controller.cpuUsage,
-          color: Colors.deepPurpleAccent,
+          color: StatColors.cpu,
+          onColor: StatColors.cpuOn,
+          radius: BlobRadius.bottomLeft,
         ),
         const SizedBox(height: 12),
         HistoryChart(
           label: 'RAM history',
           values: controller.ramHistory,
           currentValue: ramPercent,
-          color: Colors.tealAccent,
+          color: StatColors.ram,
+          onColor: StatColors.ramOn,
+          radius: BlobRadius.bottomRight,
         ),
       ],
     );

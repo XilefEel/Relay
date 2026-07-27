@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'controllers/theme_controller.dart';
 import 'screens/dashboard_screen.dart';
+import 'theme/app_theme.dart';
 
 void main() {
   runApp(const MyApp());
@@ -24,18 +25,8 @@ class _MyAppState extends State<MyApp> {
         return MaterialApp(
           title: 'Relay',
           themeMode: themeController.mode,
-          theme: ThemeData(
-            brightness: Brightness.light,
-            useMaterial3: true,
-            colorSchemeSeed: Colors.deepPurple,
-            fontFamily: 'GeistMono',
-          ),
-          darkTheme: ThemeData(
-            brightness: Brightness.dark,
-            useMaterial3: true,
-            colorSchemeSeed: Colors.deepPurple,
-            fontFamily: 'GeistMono',
-          ),
+          theme: AppTheme.light(),
+          darkTheme: AppTheme.dark(),
           home: DashboardScreen(themeController: themeController),
         );
       },

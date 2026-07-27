@@ -46,36 +46,59 @@ class ActionButton extends StatelessWidget {
   final ActionButtonData action;
   final VoidCallback onTap;
   final bool isLoading;
+  final Color color;
+  final Color onColor;
+  final BorderRadius radius;
 
   const ActionButton({
     super.key,
     required this.action,
     required this.onTap,
+    required this.color,
+    required this.onColor,
+    this.radius = const BorderRadius.all(Radius.circular(24)),
     this.isLoading = false,
   });
 
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: Theme.of(context).colorScheme.surfaceContainerHighest,
-      borderRadius: BorderRadius.circular(12),
+      color: color,
+      borderRadius: radius,
       child: InkWell(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: radius,
         onTap: isLoading ? null : onTap,
         child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 12),
+          padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 10),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               isLoading
-                  ? const SizedBox(
+                  ? SizedBox(
                       width: 22,
                       height: 22,
-                      child: CircularProgressIndicator(strokeWidth: 2),
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        valueColor: AlwaysStoppedAnimation(onColor),
+                      ),
                     )
-                  : Icon(_iconMap[action.icon] ?? Icons.apps, size: 28),
-              const SizedBox(height: 6),
-              Text(action.label, style: const TextStyle(fontSize: 13)),
+                  : Icon(
+                      _iconMap[action.icon] ?? Icons.apps,
+                      size: 26,
+                      color: onColor,
+                    ),
+              const SizedBox(height: 8),
+              Text(
+                action.label,
+                textAlign: TextAlign.center,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                  color: onColor,
+                ),
+              ),
             ],
           ),
         ),

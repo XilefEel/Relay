@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../controllers/actions_controller.dart';
+import '../theme/app_theme.dart';
 import 'action_button.dart';
 
 class ActionsSection extends StatelessWidget {
@@ -15,26 +16,32 @@ class ActionsSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Quick Actions',
-          style: TextStyle(
-            fontSize: 14,
-            color: Theme.of(context).colorScheme.onSurfaceVariant,
+          'Quick Launch',
+          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+            color: Theme.of(context).colorScheme.onSurface,
           ),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 10),
         GridView.count(
           crossAxisCount: 3,
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           crossAxisSpacing: 12,
           mainAxisSpacing: 12,
-          children: controller.actions.map((action) {
+          children: List.generate(controller.actions.length, (i) {
+            final action = controller.actions[i];
+            final fillIdx = i % StatColors.actionFills.length;
+            final shapeIdx = i % BlobRadius.cycle.length;
+
             return ActionButton(
               action: action,
               isLoading: controller.runningActionId == action.id,
               onTap: () => controller.runAction(action.id),
+              color: StatColors.actionFills[fillIdx],
+              onColor: StatColors.actionOnFills[fillIdx],
+              radius: BlobRadius.cycle[shapeIdx],
             );
-          }).toList(),
+          }),
         ),
       ],
     );
