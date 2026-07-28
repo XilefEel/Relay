@@ -5,7 +5,7 @@ use tokio::sync::Mutex;
 
 pub type SharedSystem = Arc<Mutex<System>>;
 
-pub type ActionMap = Arc<HashMap<String, ActionConfig>>;
+pub type ActionMap = Arc<Mutex<HashMap<String, ActionConfig>>>;
 
 pub struct NetworkHistory {
     pub last_received: u64,

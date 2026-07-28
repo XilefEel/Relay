@@ -11,7 +11,7 @@ use sysinfo::System;
 use tokio::sync::Mutex;
 
 use crate::{
-    actions::{get_actions, load_actions, run_action},
+    actions::{create_action, delete_action, get_actions, load_actions, run_action, update_action},
     state::AppState,
     stats::{health, ws_handler},
 };
@@ -20,7 +20,7 @@ use crate::{
 async fn main() {
     let state = AppState {
         system: Arc::new(Mutex::new(System::new_all())),
-        actions: load_actions(),
+        actions: Arc::new(Mutex::new(load_actions())),
         network_history: Arc::new(Mutex::new(state::NetworkHistory {
             last_received: 0,
             last_transmitted: 0,
@@ -30,8 +30,11 @@ async fn main() {
     let app = Router::new()
         .route("/api/health", get(health))
         .route("/ws/stats", get(ws_handler))
-        .route("/api/actions", get(get_actions))
-        .route("/api/actions/{id}", post(run_action))
+        .route("/api/actions", get(get_actions).post(create_action))
+        .route(
+            "/api/actions/{id}",
+            post(run_action).put(update_action).delete(delete_action),
+        )
         .with_state(state);
 
     let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();
