@@ -3,7 +3,7 @@ import 'package:app/theme/app_theme.dart';
 import 'package:app/widgets/network_card.dart';
 import 'package:flutter/material.dart';
 
-import 'history_chart.dart';
+import 'stat_trend_card.dart';
 import 'stat_card.dart';
 
 class StatsSection extends StatelessWidget {
@@ -25,30 +25,24 @@ class StatsSection extends StatelessWidget {
 
     return Column(
       children: [
-        Row(
-          children: [
-            Expanded(
-              child: StatCard(
-                label: 'CPU',
-                value: controller.cpuUsage,
-                color: statColors.cpu,
-                onColor: statColors.cpuOn,
-                radius: BlobRadius.topLeft,
-                icon: Icons.memory,
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: StatCard(
-                label: 'RAM',
-                value: ramPercent,
-                color: statColors.ram,
-                onColor: statColors.ramOn,
-                radius: BlobRadius.topRight,
-                icon: Icons.sd_storage,
-              ),
-            ),
-          ],
+        StatTrendCard(
+          label: 'CPU',
+          value: controller.cpuUsage,
+          history: controller.cpuHistory,
+          color: statColors.cpu,
+          onColor: statColors.cpuOn,
+          radius: BlobRadius.topLeft,
+          icon: Icons.memory,
+        ),
+        const SizedBox(height: 12),
+        StatTrendCard(
+          label: 'RAM',
+          value: ramPercent,
+          history: controller.ramHistory,
+          color: statColors.ram,
+          onColor: statColors.ramOn,
+          radius: BlobRadius.topRight,
+          icon: Icons.sd_storage,
         ),
         const SizedBox(height: 12),
         Row(
@@ -74,24 +68,6 @@ class StatsSection extends StatelessWidget {
               ),
             ),
           ],
-        ),
-        const SizedBox(height: 12),
-        HistoryChart(
-          label: 'CPU history',
-          values: controller.cpuHistory,
-          currentValue: controller.cpuUsage,
-          color: statColors.cpu,
-          onColor: statColors.cpuOn,
-          radius: BlobRadius.bottomLeft,
-        ),
-        const SizedBox(height: 12),
-        HistoryChart(
-          label: 'RAM history',
-          values: controller.ramHistory,
-          currentValue: ramPercent,
-          color: statColors.ram,
-          onColor: statColors.ramOn,
-          radius: BlobRadius.bottomRight,
         ),
       ],
     );
