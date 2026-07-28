@@ -20,23 +20,32 @@ class StatsController extends ChangeNotifier {
   double cpuUsage = 0;
   int ramUsageMb = 0;
   int ramTotalMb = 0;
+  int diskUsageGb = 0;
+  int diskTotalGb = 0;
+  int networkDownloadKbps = 0;
+  int networkUploadKbps = 0;
 
   final List<double> cpuHistory = [];
   final List<double> ramHistory = [];
 
   void _handleMessage(dynamic message) {
     final data = jsonDecode(message);
-    final cpu = (data['cpu_usage'] as num).toDouble();
-    final ramUsed = data['ram_usage_mb'] as int;
-    final ramTotal = data['total_ram_mb'] as int;
-    final ramPercent = ramTotal == 0 ? 0.0 : (ramUsed / ramTotal) * 100;
 
-    cpuUsage = cpu;
-    ramUsageMb = ramUsed;
-    ramTotalMb = ramTotal;
+    cpuUsage = (data['cpu_usage'] as num).toDouble();
+
+    ramUsageMb = data['ram_usage_mb'] as int;
+    ramTotalMb = data['total_ram_mb'] as int;
+    final ramPercent = ramTotalMb == 0 ? 0.0 : (ramUsageMb / ramTotalMb) * 100;
+
+    diskUsageGb = data['disk_usage_gb'] as int;
+    diskTotalGb = data['disk_total_gb'] as int;
+
+    networkDownloadKbps = (data['network_download_kbps'] as num).toInt();
+    networkUploadKbps = (data['network_upload_kbps'] as num).toInt();
+
     state = ConnState.connected;
 
-    cpuHistory.add(cpu);
+    cpuHistory.add(cpuUsage);
     if (cpuHistory.length > maxHistory) cpuHistory.removeAt(0);
 
     ramHistory.add(ramPercent);

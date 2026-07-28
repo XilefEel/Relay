@@ -1,39 +1,5 @@
 import 'package:flutter/material.dart';
 
-class AppTheme {
-  static const seedColor = Color(0xFF7F77DD);
-
-  static ThemeData light() => _base(Brightness.light);
-  static ThemeData dark() => _base(Brightness.dark);
-
-  static ThemeData _base(Brightness brightness) {
-    final scheme = ColorScheme.fromSeed(
-      seedColor: seedColor,
-      brightness: brightness,
-    );
-
-    return ThemeData(
-      useMaterial3: true,
-      brightness: brightness,
-      colorScheme: scheme,
-      fontFamily: 'GeistMono',
-      scaffoldBackgroundColor: scheme.surface,
-      textTheme: const TextTheme(
-        displaySmall: TextStyle(fontWeight: FontWeight.w700, fontSize: 32),
-        titleLarge: TextStyle(fontWeight: FontWeight.w600, fontSize: 22),
-        titleMedium: TextStyle(fontWeight: FontWeight.w600, fontSize: 15),
-        labelLarge: TextStyle(fontWeight: FontWeight.w600, fontSize: 13),
-        bodyMedium: TextStyle(fontWeight: FontWeight.w400, fontSize: 14),
-      ),
-      appBarTheme: const AppBarTheme(
-        centerTitle: false,
-        elevation: 0,
-        scrolledUnderElevation: 0,
-      ),
-    );
-  }
-}
-
 class StatColorsLight {
   static const cpu = Color(0xFFCECBF6);
   static const cpuOn = Color(0xFF3C3489);
@@ -43,6 +9,12 @@ class StatColorsLight {
 
   static const gpu = Color(0xFFF5C4B3);
   static const gpuOn = Color(0xFF712B13);
+
+  static const disk = Color(0xFFF4C0D1);
+  static const diskOn = Color(0xFF72243E);
+
+  static const network = Color(0xFFB5D4F4);
+  static const networkOn = Color(0xFF0C447C);
 
   static const actionFills = [
     Color(0xFFCECBF6),
@@ -73,6 +45,12 @@ class StatColorsDark {
   static const gpu = Color(0xFFF0997B);
   static const gpuOn = Color(0xFF4A1B0C);
 
+  static const disk = Color(0xFFED93B1);
+  static const diskOn = Color(0xFF4B1528);
+
+  static const network = Color(0xFF378ADD);
+  static const networkOn = Color(0xFF042C53);
+
   static const actionFills = [
     Color(0xFF7F77DD),
     Color(0xFF5DCAA5),
@@ -93,7 +71,16 @@ class StatColorsDark {
 }
 
 class StatColors {
-  final Color cpu, cpuOn, ram, ramOn, gpu, gpuOn;
+  final Color cpu,
+      cpuOn,
+      ram,
+      ramOn,
+      gpu,
+      gpuOn,
+      disk,
+      diskOn,
+      network,
+      networkOn;
   final List<Color> actionFills, actionOnFills;
 
   const StatColors._({
@@ -103,6 +90,10 @@ class StatColors {
     required this.ramOn,
     required this.gpu,
     required this.gpuOn,
+    required this.disk,
+    required this.diskOn,
+    required this.network,
+    required this.networkOn,
     required this.actionFills,
     required this.actionOnFills,
   });
@@ -114,6 +105,10 @@ class StatColors {
     ramOn: StatColorsLight.ramOn,
     gpu: StatColorsLight.gpu,
     gpuOn: StatColorsLight.gpuOn,
+    disk: StatColorsLight.disk,
+    diskOn: StatColorsLight.diskOn,
+    network: StatColorsLight.network,
+    networkOn: StatColorsLight.networkOn,
     actionFills: StatColorsLight.actionFills,
     actionOnFills: StatColorsLight.actionOnFills,
   );
@@ -125,12 +120,51 @@ class StatColors {
     ramOn: StatColorsDark.ramOn,
     gpu: StatColorsDark.gpu,
     gpuOn: StatColorsDark.gpuOn,
+    disk: StatColorsDark.disk,
+    diskOn: StatColorsDark.diskOn,
+    network: StatColorsDark.network,
+    networkOn: StatColorsDark.networkOn,
     actionFills: StatColorsDark.actionFills,
     actionOnFills: StatColorsDark.actionOnFills,
   );
 
   static StatColors of(BuildContext context) {
     return Theme.of(context).brightness == Brightness.dark ? _dark : _light;
+  }
+}
+
+class AppTheme {
+  static const seedColor = Color(0xFF7F77DD);
+
+  static ThemeData light() => _base(Brightness.light);
+
+  static ThemeData dark() => _base(Brightness.dark);
+
+  static ThemeData _base(Brightness brightness) {
+    final scheme = ColorScheme.fromSeed(
+      seedColor: seedColor,
+      brightness: brightness,
+    );
+
+    return ThemeData(
+      useMaterial3: true,
+      brightness: brightness,
+      colorScheme: scheme,
+      fontFamily: 'GeistMono',
+      scaffoldBackgroundColor: scheme.surface,
+      textTheme: const TextTheme(
+        displaySmall: TextStyle(fontWeight: FontWeight.w700, fontSize: 32),
+        titleLarge: TextStyle(fontWeight: FontWeight.w600, fontSize: 22),
+        titleMedium: TextStyle(fontWeight: FontWeight.w600, fontSize: 15),
+        labelLarge: TextStyle(fontWeight: FontWeight.w600, fontSize: 13),
+        bodyMedium: TextStyle(fontWeight: FontWeight.w400, fontSize: 14),
+      ),
+      appBarTheme: const AppBarTheme(
+        centerTitle: false,
+        elevation: 0,
+        scrolledUnderElevation: 0,
+      ),
+    );
   }
 }
 
