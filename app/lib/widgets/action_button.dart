@@ -18,28 +18,17 @@ class ActionButtonData {
 
 const Map<String, IconData> _iconMap = {
   'browser': Icons.public,
-  'search': Icons.search,
-  'music': Icons.music_note,
-  'video': Icons.play_circle,
-  'camera': Icons.photo_camera,
-  'image': Icons.image,
+  'folder': Icons.folder,
   'edit': Icons.edit_note,
   'code': Icons.code,
   'terminal': Icons.terminal,
-  'folder': Icons.folder,
-  'notes': Icons.sticky_note_2,
-  'calendar': Icons.calendar_today,
-  'mail': Icons.mail,
+  'media': Icons.play_circle,
   'chat': Icons.chat_bubble,
+  'calendar': Icons.calendar_today,
   'settings': Icons.settings,
-  'lock': Icons.lock,
-  'power': Icons.power_settings_new,
-  'refresh': Icons.refresh,
-  'volume': Icons.volume_up,
   'game': Icons.sports_esports,
-  'download': Icons.download,
   'design': Icons.brush,
-  'shapes': Icons.category,
+  'utility': Icons.build,
 };
 
 class ActionButton extends StatelessWidget {

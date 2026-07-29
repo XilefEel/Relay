@@ -3,8 +3,7 @@ mod state;
 mod stats;
 
 use axum::{
-    Router,
-    routing::{get, post},
+    Router, response::Html, routing::{get, post},
 };
 use std::sync::Arc;
 use sysinfo::System;
@@ -15,6 +14,10 @@ use crate::{
     state::AppState,
     stats::{health, ws_handler},
 };
+
+async fn admin_page() -> Html<&'static str> {
+    Html(include_str!("../static/admin.html"))
+}
 
 #[tokio::main]
 async fn main() {
@@ -35,10 +38,12 @@ async fn main() {
             "/api/actions/{id}",
             post(run_action).put(update_action).delete(delete_action),
         )
+        .route("/admin", get(admin_page))
         .with_state(state);
 
     let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();
     println!("Server running on http://0.0.0.0:3000");
+    println!("Admin page available at http://localhost:3000/admin");
 
     axum::serve(listener, app).await.unwrap();
 }

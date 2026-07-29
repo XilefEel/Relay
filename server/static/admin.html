@@ -1,0 +1,337 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Relay — Admin</title>
+    <style>
+      :root {
+        --bg: #0f0f12;
+        --surface: #1a1a1f;
+        --surface-hover: #232329;
+        --border: #2c2c33;
+        --text: #e8e8ea;
+        --text-dim: #9a9aa2;
+        --accent: #7f77dd;
+        --danger: #e0555f;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family: ui-monospace, "Geist Mono", "SF Mono", monospace;
+        max-width: 700px;
+        margin: 0 auto;
+        padding: 32px 20px;
+      }
+
+      h1 {
+        font-size: 20px;
+        font-weight: 600;
+        margin-bottom: 4px;
+      }
+
+      .card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 16px;
+        margin-bottom: 12px;
+      }
+
+      .action-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+      }
+
+      .action-info {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+      }
+
+      .action-label {
+        font-size: 14px;
+        font-weight: 600;
+      }
+
+      .action-meta {
+        font-size: 12px;
+        color: var(--text-dim);
+      }
+
+      .action-buttons {
+        display: flex;
+        gap: 8px;
+      }
+
+      button {
+        font-family: inherit;
+        font-size: 12px;
+        border: 1px solid var(--border);
+        background: var(--surface-hover);
+        color: var(--text);
+        padding: 6px 12px;
+        border-radius: 6px;
+        cursor: pointer;
+      }
+
+      button:hover {
+        border-color: var(--accent);
+      }
+
+      button.danger:hover {
+        border-color: var(--danger);
+        color: var(--danger);
+      }
+
+      button.primary {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: #fff;
+        font-weight: 600;
+      }
+
+      form {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .action-input {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+
+      label {
+        font-size: 12px;
+        color: var(--text-dim);
+      }
+
+      input,
+      select {
+        font-family: inherit;
+        background: var(--bg);
+        border: 1px solid var(--border);
+        color: var(--text);
+        padding: 8px 10px;
+        border-radius: 6px;
+        font-size: 13px;
+      }
+
+      input:focus,
+      select:focus {
+        outline: none;
+        border-color: var(--accent);
+      }
+
+      .empty-state {
+        color: var(--text-dim);
+        font-size: 13px;
+        text-align: center;
+        padding: 24px 0;
+      }
+
+      .toast {
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: var(--surface);
+        border: 1px solid var(--border);
+        padding: 10px 16px;
+        border-radius: 8px;
+        font-size: 13px;
+        opacity: 0;
+        transition: opacity 0.2s;
+        pointer-events: none;
+      }
+
+      .toast.show {
+        opacity: 1;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Relay</h1>
+
+    <div class="card">
+      <div id="actions-list"></div>
+      <div id="empty-state" class="empty-state" style="display: none">
+        No actions yet. Add one below.
+      </div>
+    </div>
+
+    <div class="card">
+      <form id="action-form">
+        <input type="hidden" id="edit-id" value="" />
+
+        <div class="action-input">
+          <label for="id">ID (lowercase, no spaces)</label>
+          <input type="text" id="id" required pattern="[a-z0-9\-]+" />
+        </div>
+
+        <div class="action-input">
+          <label for="label">Label</label>
+          <input type="text" id="label" required />
+        </div>
+
+        <div class="action-input">
+          <label for="icon">Icon</label>
+          <select id="icon">
+            <option value="browser">Browser</option>
+            <option value="folder">Folder</option>
+            <option value="edit">Editor</option>
+            <option value="code">Code</option>
+            <option value="terminal">Terminal</option>
+            <option value="media">Media</option>
+            <option value="chat">Chat</option>
+            <option value="calendar">Calendar</option>
+            <option value="settings">Settings</option>
+            <option value="game">Game</option>
+            <option value="design">Design</option>
+            <option value="utility">Utility</option>
+          </select>
+        </div>
+
+        <div class="action-input">
+          <label for="command">Command (full path)</label>
+          <input
+            type="text"
+            id="command"
+            required
+            placeholder="C:\Path\To\app.exe"
+          />
+        </div>
+
+        <button type="submit" class="primary" id="submit-btn">
+          Add Action
+        </button>
+      </form>
+    </div>
+
+    <div id="toast" class="toast"></div>
+
+    <script>
+      const listEl = document.getElementById("actions-list");
+      const emptyEl = document.getElementById("empty-state");
+      const formEl = document.getElementById("action-form");
+      const idInput = document.getElementById("id");
+      const labelInput = document.getElementById("label");
+      const iconInput = document.getElementById("icon");
+      const commandInput = document.getElementById("command");
+      const editIdInput = document.getElementById("edit-id");
+      const submitBtn = document.getElementById("submit-btn");
+      const toastEl = document.getElementById("toast");
+
+      function showToast(message) {
+        toastEl.textContent = message;
+        toastEl.classList.add("show");
+        setTimeout(() => toastEl.classList.remove("show"), 2000);
+      }
+
+      async function loadActions() {
+        const res = await fetch("/api/actions");
+        const actions = await res.json();
+
+        listEl.innerHTML = "";
+        emptyEl.style.display = actions.length === 0 ? "block" : "none";
+
+        for (const action of actions) {
+          const row = document.createElement("div");
+          row.className = "action-row";
+          row.style.marginBottom = "12px";
+          row.innerHTML = `
+            <div class="action-info">
+              <span class="action-label">${action.label}</span>
+              <span class="action-meta">${action.command}</span>
+            </div>
+            <div class="action-buttons">
+              <button data-edit="${action.id}">Edit</button>
+              <button data-delete="${action.id}" class="danger">Delete</button>
+            </div>
+      `;
+          listEl.appendChild(row);
+        }
+      }
+
+      function startEdit(action) {
+        editIdInput.value = action.id;
+        idInput.value = action.id;
+        idInput.disabled = true;
+        labelInput.value = action.label;
+        iconInput.value = action.icon;
+        commandInput.value = action.command;
+        submitBtn.textContent = "Save Changes";
+      }
+
+      function resetForm() {
+        formEl.reset();
+        editIdInput.value = "";
+        idInput.disabled = false;
+        submitBtn.textContent = "Add Action";
+      }
+
+      listEl.addEventListener("click", async (e) => {
+        const editId = e.target.dataset.edit;
+        const deleteId = e.target.dataset.delete;
+
+        if (editId) {
+          const res = await fetch("/api/actions");
+          const actions = await res.json();
+          const action = actions.find((a) => a.id === editId);
+          if (action) startEdit(action);
+        }
+
+        if (deleteId) {
+          if (!confirm(`Delete "${deleteId}"?`)) return;
+          await fetch(`/api/actions/${deleteId}`, { method: "DELETE" });
+          showToast("Deleted");
+          loadActions();
+        }
+      });
+
+      formEl.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const payload = {
+          id: idInput.value.trim(),
+          label: labelInput.value.trim(),
+          icon: iconInput.value,
+          command: commandInput.value.trim(),
+        };
+
+        const isEditing = editIdInput.value !== "";
+        const url = isEditing
+          ? `/api/actions/${editIdInput.value}`
+          : "/api/actions";
+        const method = isEditing ? "PUT" : "POST";
+
+        const res = await fetch(url, {
+          method,
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+
+        if (res.ok) {
+          showToast(isEditing ? "Saved" : "Added");
+          resetForm();
+          loadActions();
+        } else if (res.status === 409) {
+          showToast("ID already exists");
+        } else {
+          showToast("Something went wrong");
+        }
+      });
+
+      loadActions();
+    </script>
+  </body>
+</html>
