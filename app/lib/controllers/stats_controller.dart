@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
@@ -7,12 +8,14 @@ enum ConnState { connecting, connected, error }
 class StatsController extends ChangeNotifier {
   final String serverIp;
   static const int maxHistory = 30;
+  static const Duration connectionTimeout = Duration(seconds: 5);
 
   StatsController({required this.serverIp}) {
     _connect();
   }
 
-  late final WebSocketChannel _channel;
+  late WebSocketChannel _channel;
+  Timer? _connectionTimer;
 
   ConnState state = ConnState.connecting;
   String? errorMessage;
@@ -29,6 +32,7 @@ class StatsController extends ChangeNotifier {
   final List<double> ramHistory = [];
 
   void _handleMessage(dynamic message) {
+    _connectionTimer?.cancel();
     final data = jsonDecode(message);
 
     cpuUsage = (data['cpu_usage'] as num).toDouble();
@@ -59,14 +63,24 @@ class StatsController extends ChangeNotifier {
       Uri.parse('ws://$serverIp:3000/ws/stats'),
     );
 
+    _connectionTimer = Timer(connectionTimeout, () {
+      if (state == ConnState.connecting) {
+        state = ConnState.error;
+        errorMessage = 'Could not reach server';
+        notifyListeners();
+      }
+    });
+
     _channel.stream.listen(
       _handleMessage,
       onError: (error) {
+        _connectionTimer?.cancel();
         state = ConnState.error;
         errorMessage = 'Could not reach server';
         notifyListeners();
       },
       onDone: () {
+        _connectionTimer?.cancel();
         state = ConnState.error;
         errorMessage = 'Disconnected from server';
         notifyListeners();
@@ -75,6 +89,7 @@ class StatsController extends ChangeNotifier {
   }
 
   void retry() {
+    _connectionTimer?.cancel();
     state = ConnState.connecting;
     errorMessage = null;
     cpuHistory.clear();
@@ -85,6 +100,7 @@ class StatsController extends ChangeNotifier {
 
   @override
   void dispose() {
+    _connectionTimer?.cancel();
     _channel.sink.close();
     super.dispose();
   }
