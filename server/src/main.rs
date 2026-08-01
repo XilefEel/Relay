@@ -1,6 +1,7 @@
 mod actions;
 mod state;
 mod stats;
+mod discovery;
 
 use axum::{
     Router, response::Html, routing::{get, post},
@@ -10,9 +11,7 @@ use sysinfo::System;
 use tokio::sync::Mutex;
 
 use crate::{
-    actions::{create_action, delete_action, get_actions, load_actions, run_action, update_action},
-    state::AppState,
-    stats::{health, ws_handler},
+    actions::{create_action, delete_action, get_actions, load_actions, run_action, update_action}, discovery::discovery_listener, state::AppState, stats::{health, ws_handler},
 };
 
 async fn admin_page() -> Html<&'static str> {
@@ -29,6 +28,8 @@ async fn main() {
             last_transmitted: 0,
         })),
     };
+
+    tokio::spawn(discovery_listener());
 
     let app = Router::new()
         .route("/api/health", get(health))
