@@ -52,21 +52,24 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 message: statsController.errorMessage!,
                 onRetry: statsController.retry,
               ),
-              ConnState.connected => ListView(
-                padding: const EdgeInsets.all(16),
-                children: [
-                  ListenableBuilder(
-                    listenable: statsController,
-                    builder: (context, _) =>
-                        StatsSection(controller: statsController),
-                  ),
-                  const SizedBox(height: 20),
-                  ListenableBuilder(
-                    listenable: actionsController,
-                    builder: (context, _) =>
-                        ActionsSection(controller: actionsController),
-                  ),
-                ],
+              ConnState.connected => RefreshIndicator(
+                onRefresh: () async => actionsController.fetchActions(),
+                child: ListView(
+                  padding: const EdgeInsets.all(16),
+                  children: [
+                    ListenableBuilder(
+                      listenable: statsController,
+                      builder: (context, _) =>
+                          StatsSection(controller: statsController),
+                    ),
+                    const SizedBox(height: 20),
+                    ListenableBuilder(
+                      listenable: actionsController,
+                      builder: (context, _) =>
+                          ActionsSection(controller: actionsController),
+                    ),
+                  ],
+                ),
               ),
             };
           },
