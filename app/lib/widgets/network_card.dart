@@ -34,15 +34,28 @@ class NetworkCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text(
-            'Network',
-            style: TextStyle(
-              color: onColor,
-              fontWeight: FontWeight.w600,
-              fontSize: 13,
-            ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Network',
+                style: TextStyle(
+                  color: onColor,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 13,
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.all(6),
+                decoration: BoxDecoration(
+                  color: onColor.withValues(alpha: 0.12),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(Icons.wifi, color: onColor, size: 16),
+              ),
+            ],
           ),
-          const SizedBox(height: 14),
+          const SizedBox(height: 16),
           _SpeedRow(
             icon: Icons.arrow_downward_rounded,
             value: _format(downloadKbps),
@@ -75,11 +88,8 @@ class _SpeedRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Container(
-          padding: const EdgeInsets.all(6),
-          child: Icon(icon, size: 20, color: onColor),
-        ),
-        const SizedBox(width: 10),
+        Icon(icon, size: 16, color: onColor),
+        const SizedBox(width: 8),
         Text(
           value,
           style: TextStyle(

@@ -1,5 +1,20 @@
 import 'package:flutter/material.dart';
 
+const Map<String, IconData> _iconMap = {
+  'browser': Icons.public,
+  'folder': Icons.folder,
+  'edit': Icons.edit_note,
+  'code': Icons.code,
+  'terminal': Icons.terminal,
+  'media': Icons.play_circle,
+  'chat': Icons.chat_bubble,
+  'calendar': Icons.calendar_today,
+  'settings': Icons.settings,
+  'game': Icons.sports_esports,
+  'design': Icons.brush,
+  'utility': Icons.build,
+};
+
 class ActionButtonData {
   final String id;
   final String label;
@@ -15,21 +30,6 @@ class ActionButtonData {
     );
   }
 }
-
-const Map<String, IconData> _iconMap = {
-  'browser': Icons.public,
-  'folder': Icons.folder,
-  'edit': Icons.edit_note,
-  'code': Icons.code,
-  'terminal': Icons.terminal,
-  'media': Icons.play_circle,
-  'chat': Icons.chat_bubble,
-  'calendar': Icons.calendar_today,
-  'settings': Icons.settings,
-  'game': Icons.sports_esports,
-  'design': Icons.brush,
-  'utility': Icons.build,
-};
 
 class ActionButton extends StatelessWidget {
   final ActionButtonData action;
@@ -64,8 +64,8 @@ class ActionButton extends StatelessWidget {
             children: [
               isLoading
                   ? SizedBox(
-                      width: 22,
-                      height: 22,
+                      width: 24,
+                      height: 24,
                       child: CircularProgressIndicator(
                         strokeWidth: 2,
                         valueColor: AlwaysStoppedAnimation(onColor),
@@ -73,7 +73,7 @@ class ActionButton extends StatelessWidget {
                     )
                   : Icon(
                       _iconMap[action.icon] ?? Icons.apps,
-                      size: 26,
+                      size: 24,
                       color: onColor,
                     ),
               const SizedBox(height: 8),
